@@ -7,9 +7,11 @@ modes mode = modes.MMENU;
 Level current;
 
 void setup() {
-  size(256, 224); // NES resolution
- // megaman = new Player();
-  //megaman.loadImages();
+  size(256, 224); // NES resolution = 256,224
+  megaman = new Player();
+  megaman.loadImages();
+  current = new BombStage();
+
 }
 
 void draw() {
@@ -19,6 +21,7 @@ void draw() {
     break;
   case LVL1:
     current.drawLevel();
+    megaman.draw();
     break;
    
   }
@@ -30,8 +33,4 @@ void drawMainMenu() {
     current = new BombStage();
     mode = modes.LVL1;
   }
-}
-
-void drawLVL1() {
-  current.drawLevel();
 }
