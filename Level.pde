@@ -3,4 +3,6 @@ abstract class Level {
   int score = 0;
 
   abstract void drawLevel();  
+  abstract boolean atLowestPoint();
+  abstract String getSound();
 }  
