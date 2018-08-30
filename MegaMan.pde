@@ -1,23 +1,24 @@
-Player megaman;
+import processing.sound.*;
+
+Player megaman; 
+
 enum modes {
-  MMENU, LVL1
+  MMENU, STAGESELECT, LVL1, GAMEOVER
+};
+enum dir {
+  NORTH, SOUTH, EAST, WEST, NONE
 };
 
 modes mode = modes.MMENU;
 Level current;
-SoundFile audio;
- 
+
 void setup() {
   size(256, 224); // NES resolution = 256,224
-  frameRate(30);
+  frameRate(60);
+  noSmooth();
   megaman = new Player();
   megaman.loadImages();
   current = new BombStage();
-  audio = new SoundFile(this, "StageSelect.wav");
- Sound s = new Sound(this);
- s.volume(1);
-  audio.loop();
-  audio.play();
 }
 
 void draw() {
@@ -25,22 +26,87 @@ void draw() {
   case MMENU:
     drawMainMenu();
     break;
+      case GAMEOVER:
+    drawGameOver();
+    break;
+      case STAGESELECT:
+    drawStageSelect();
+    break;
   case LVL1:
-    audio.play();
+    //    megaman.draw();
     current.drawLevel();
     megaman.draw();
+
     break;
-   
   }
 }
 
 void drawMainMenu() {
-  image(loadImage("mmenu.png"), 0, 0);
+  imageMode(CORNER);
+  image(loadImage("mmenu.jpg"), 0, 0);
+  if (keyPressed) {
+    mode = modes.STAGESELECT;
+    keyPressed = false;
+  }
+}
+
+void drawStageSelect() {
+  imageMode(CORNER);
+  image(loadImage("stageSelect.jpg"), 0, 0);
   if (keyPressed) {
     current = new BombStage();
-    println(current.getSound());
-    audio = new SoundFile(this, current.getSound());
     mode = modes.LVL1;
+    keyPressed = false;
   }
+}
 
+void drawGameOver() {
+   imageMode(CORNER);
+  image(loadImage("gOver.jpg"), 0, 0);
+  if (keyPressed) {
+    mode = modes.MMENU;
+    keyPressed = false;
+  }
+}
+
+
+void keyPressed() {
+ if  (key == 'd')
+  {
+    megaman.right = 1;
+    megaman.direction = 1;
+  }
+  if (key == 'a')
+  {
+    megaman.left = -1;
+    megaman.direction = -1;
+  }
+  if (key == 'w')
+  {
+    megaman.up = -1;
+  }
+  if (key == 's')
+  {
+    megaman.down = 1;
+  }
+}
+
+void keyReleased()
+{
+  if (key == 'd')
+  {
+    megaman.right = 0;
+  }
+  if (key == 'a')
+  {
+    megaman.left = 0;
+  }
+  if (key == 'w')
+  {
+    megaman.up = 0;
+  }
+  if (key == 's')
+  {
+    megaman.down = 0;
+  }
 }

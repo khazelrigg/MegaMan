@@ -1,65 +1,64 @@
-import processing.sound.*;
-
 class BombStage extends Level {
-  PImage bgImg;
-  PVector pos = new PVector(13, 990); //REG START 13,990
-  
-  String getSound() {
-    return "BombmanStage.wav";
-  }
 
   BombStage() {
-    println("Creating BombStage");
-    bgImg = loadImage("lvl1.png");
-    megaman.pos = new PVector(100, 159);
+    println("Loading BombStage");
+    bgImg = loadImage("stages/bombMan.jpg");
+    collisionImg = loadImage("stages/bombManCollision.jpg");
+    pos = new PVector(13, 990);
+    megaman.pos = new PVector(100, 159); // Set where Megaman should start
   }
 
   void drawLevel() {
-    //println("Draw BombStage");
-    int dX = 0;
+    float pX = megaman.pos.x;
+    float pY = megaman.pos.y;
+    float dX = 0;
     int dY = 0;
-    int d = 2;
-    println(megaman.pos);
-    if (megaman.pos.x < 100) {
-      if (canMoveLeft()) dX = -d;
-    }
-    if (megaman.pos.x > 140) {
-      if (canMoveRight()) dX = d;
-    }
-
-    if (megaman.pos.y < 20) {
-      if (canMoveUp()) dY = -d;
-    }
-
-    if (megaman.pos.y == 224) {
-      if (canMoveDown()) dY =d;
-    }
-    if (megaman.pos.x ==144) {
-      if (canMoveRight()) dX = d;
-    }
-
+   //println("Player (x,y) = (" + pX + ", " + pY + ")" + "DIRECTION: " + megaman.direction+ " VELOCITY:  " + megaman.velocity);
+    //println("Camera (x,y) = (" + pos.x + ", " + pos.y + ")");
+    
+    //Only move camera if player is moving
     if (keyPressed) {
-      switch(key) {
-        case('w'): 
-        if (canMoveUp()) dY = -d;
-        break;
-        case('s'): 
-        if (canMoveDown())dY = d;
-        break;
-        case('a'): 
-        if (canMoveLeft()) dX = -d;
-        break;
-        case('d'): 
-        if (canMoveRight()) dX = d;
-        break;
+      // RIGHT HALF
+      if (pX > 127 && megaman.direction > 0) {
+        if (canMoveRight()) {
+          megaman.pos.x = 127;
+
+          dX = megaman.walkSpeed;
+          pos.x += megaman.walkSpeed;
+        }
+
+        // LEFT HALF
+      } else if (pX < 128 && megaman.direction< 0) {
+        if (canMoveLeft()) {
+                    megaman.pos.x = 128;
+
+          dX = -megaman.walkSpeed;
+          pos.x -= megaman.walkSpeed;
+        }
       }
-      //keyPressed = false;
     }
-    pos.y += dY;
-    pos.x += dX;
+
     translate(dX, dY);
+    imageMode(CORNER);
     image(bgImg, -pos.x, -pos.y);
-    //println(pos);
+
+        fill(#000000);
+    //  megaman.draw();
+  }
+
+  boolean canMove(dir d) {
+    switch(d) {
+    case NORTH:
+      return canMoveUp();
+    case SOUTH:
+      return canMoveDown();
+    case EAST:
+      return canMoveRight();
+    case WEST:
+      return canMoveLeft();
+    default:
+      return false;
+    }
   }
 
   boolean canMoveUp() {
@@ -93,6 +92,10 @@ class BombStage extends Level {
   }
 
   boolean atLowestPoint() {
-     return pos.y == 194;
+    return pos.y == 194;
+  }
+
+  int getGroundPosition(float x) {
+    return 170;
   }
 }
