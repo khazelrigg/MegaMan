@@ -25,6 +25,8 @@ class Player {
 
   PImage img;
   public PImage[] images = new PImage[9];
+  int pHeight;
+  int pWidth;
 
   void loadImages()
   {
@@ -42,6 +44,8 @@ class Player {
     } 
 
     img = images[1];
+    pHeight = img.height;
+    pWidth = img.height;
   }
 
   void draw() {
@@ -57,7 +61,7 @@ class Player {
 
     boolean onGround = false;
 
-    if (!checkDownCollision(pos)) {
+    if (!checkCollision(dir.SOUTH, pos)) {
       velocity.y += 0.5;
     } else {
       onGround = true;
@@ -80,12 +84,12 @@ class Player {
     fPos.add(velocity);
 
     if (!current.canMove(dir.WEST) && fPos.x > img.width / 2 ||  !current.canMove(dir.EAST) && fPos.x < 256 - img.width / 2 || fPos.x > 123 && fPos.x < 130) {
-      if (fPos.x > pos.x && !checkRightCollision(fPos) || fPos.x < pos.x && !checkLeftCollision(fPos)) {
-      pos.x = fPos.x;
+      if (fPos.x > pos.x && !checkCollision(dir.EAST, fPos) || fPos.x < pos.x && !checkCollision(dir.WEST, fPos)) {
+        pos.x = fPos.x;
       }
     }
-    
-    if (fPos.y > 0 && fPos.y < 224)
+
+    if (!checkCollision(dir.NORTH, fPos) && fPos.y > 0 && fPos.y < 224) 
       pos.y = fPos.y;
 
     pushMatrix();
@@ -101,7 +105,7 @@ class Player {
     //Draw hitbox
     stroke(#ffff00);
     noFill();
-    rect(-img.width/2, -img.height/2,img.width,img.height);
+    rect(-img.width/2, -img.height/2, img.width, img.height);
 
     popMatrix();
   }
@@ -135,6 +139,8 @@ class Player {
     default:    
       img = images[1];
     }
+    pHeight = img.height;
+    pWidth = img.height;
   }
 
   void stand() {
@@ -145,53 +151,103 @@ class Player {
         framesSinceStand = 0;
     } else 
     img = images[1];
+    pHeight = img.height;
+    pWidth = img.height;
     framesSinceStand++;
   }
 
-  boolean checkDownCollision(PVector pos) {
-     int pWidth = img.width;
-    int pHeight = 22;
-    int pX = int(current.pos.x +  pos.x);
-    int pY = int(current.pos.y + pos.y) + pHeight/2;
-    color pixBelow = current.collisionImg.get(pX, pY + 2);
-    printcoor("B ", pX, pY - 1);
-    println("B: " + (pixBelow == #000000));
-    
+  boolean checkCollision(dir d, PVector pos) {
     stroke(#ff0000);
-    rect( pos.x,pos.y + pHeight/2,1,1);
-    return pixBelow == #000000;
-  }
-  
-  //TODO CHECK TOP/BOTTOM CORNERS
-  boolean checkRightCollision(PVector pos) {
-     int pWidth =img.width;
-    int pHeight = img.height;
-    int pX = int(current.pos.x +  pos.x) +  pWidth / 2;
-    int pY = int(current.pos.y + pos.y); //+ pHeight / 2 -1;
-    color pixRight = current.collisionImg.get(pX +1, pY);
-    printcoor("R", pX + 1, pY);
-    print ("R : " + (pixRight == #000000));
-    
-    stroke(#ff0000);
-    rect(pos.x + pWidth / 2, pos.y , 1,1);
-    
-    return pixRight == #000000;
+
+    switch(d) {
+    case NORTH:
+      return checkUpCollision(pos);
+    case SOUTH:
+      return checkDownCollision(pos);
+    case EAST:
+      return checkLRCollision(pos);
+    case WEST:
+      return checkLRCollision(pos);
+    default:
+      return false;
+    }
   }
 
-  boolean checkLeftCollision(PVector pos) {
-    println("EFT");
-     int pWidth =img.width;
-    int pHeight = img.height;
-    int pX = int(current.pos.x +  pos.x -  pWidth / 2);
-    int pY = int(current.pos.y + pos.y); //+ pHeight / 2 -1;
-    color pixLeft = current.collisionImg.get(pX - 1, pY);
-    printcoor("L", pX +-1, pY);
-    print ("L : " + (pixLeft == #000000));
-    
-    stroke(#ff0000);
-    rect((pos.x - pWidth /2) - 1, pos.y , 1,1);
-    
-    return pixLeft == #000000;
+  boolean checkLRCollision(PVector pos) {
+    stroke(#00ff00);
+
+    int pX = int(current.pos.x +  pos.x + direction * (pWidth / 2));
+    int pY = int(current.pos.y + pos.y);
+
+    color[] colors = new color[3];
+    // PIXEL TOP 
+    colors[0] = current.collisionImg.get(pX + 1, pY - pHeight / 2 - 1);
+    rect( pos.x + direction * (pWidth / 2), pos.y - pHeight /2 - 1, 1, 1);
+    // PIXEL CENTERED 
+    colors[1] = current.collisionImg.get(pX + 1, pY);
+    rect( pos.x + direction * (pWidth / 2) + 1, pos.y, 1, 1);
+    // PIXEL BOTTOM
+    colors[2] = current.collisionImg.get(pX + 1, pY + pHeight / 2 - 1); // Take out 1 from y so that we are not checking in ground
+    rect( pos.x + direction * (pWidth / 2), pos.y + pHeight / 2 - 2, 1, 1);
+
+    for (color c : colors) {
+      if (c == #000000) {
+        println("RIGHT COLLISION");
+        return true;
+      }
+    }
+    return false;
+  }
+
+  boolean checkUpCollision(PVector pos) {
+    int pX = int(current.pos.x +  pos.x);
+    int pY = int(current.pos.y + pos.y) - pHeight / 2;
+    color[] colors = new color[3];
+    // PIXEL CENTERED ABOVE
+    colors[0] = current.collisionImg.get(pX, pY - 1);
+    rect( pos.x, pos.y - pHeight /2 - 1, 1, 1);
+
+    // PIXEL TOP RIGHT
+    colors[1] = current.collisionImg.get(pX + pWidth / 2, pY - 1);
+    rect( pos.x + pWidth / 2 - 1, pos.y - pHeight /2 - 1, 1, 1);
+
+    // PIXEL TOP LEFT
+    colors[2] = current.collisionImg.get(pX - pWidth / 2, pY - 1);
+    rect( pos.x - pWidth / 2 + 1, pos.y - pHeight /2 - 1, 1, 1);
+
+    for (color c : colors) {
+      if (c == #000000) {
+        println("UPPER COLLISION");
+        return true;
+      }
+    }
+    return false;
+  }
+
+  boolean checkDownCollision(PVector pos) {
+    int pX = int(current.pos.x +  pos.x);
+    int pY = int(current.pos.y + pos.y) + pHeight/2 + 1;
+    color[] colors = new color[3];
+
+    // PIXEL CENTERED BELOW
+    colors[0] = current.collisionImg.get(pX, pY);
+    rect( pos.x, pos.y + pHeight /2, 1, 1);
+
+    // PIXEL TOP RIGHT
+    colors[1] = current.collisionImg.get(pX + pWidth / 2, pY);
+    rect( pos.x + pWidth / 2 - 1, pos.y + pHeight /2, 1, 1);
+
+    // PIXEL TOP LEFT
+    colors[2] = current.collisionImg.get(pX - pWidth / 2, pY);
+    rect( pos.x - pWidth / 2 + 1, pos.y + pHeight /2, 1, 1);
+
+    for (color c : colors) {
+      if (c == #000000) {
+        println("LOWER COLLISION");
+        return true;
+      }
+    }
+    return false;
   }
 
 

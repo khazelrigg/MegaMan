@@ -1,12 +1,10 @@
-import processing.sound.*;
-
 Player megaman; 
 
 enum modes {
   MMENU, STAGESELECT, LVL1, GAMEOVER
 };
 enum dir {
-  NORTH, SOUTH, EAST, WEST, NONE
+  NORTH, SOUTH, EAST, WEST
 };
 
 modes mode = modes.MMENU;
@@ -33,7 +31,6 @@ void draw() {
     drawStageSelect();
     break;
   case LVL1:
-    //    megaman.draw();
     current.drawLevel();
     megaman.draw();
 
