@@ -176,6 +176,7 @@ class Player {
   boolean checkLRCollision(PVector pos) {
     stroke(#00ff00);
 
+    // Use direction (-1 or 1) to flip sign
     int pX = int(current.pos.x +  pos.x + direction * (pWidth / 2));
     int pY = int(current.pos.y + pos.y);
 
