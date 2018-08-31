@@ -1,6 +1,11 @@
-# MegaMan in Processing
+---
+title: khazerligg - Megaman
+---
 
-## Welc me to my MegaMan project, from here I plan to upload some of my ideas and explain some of my design choices.
+## Welcome to my MegaMan project, from here I plan to upload some of my ideas and explain some of my design choices.
+
+
+### View my posts
 
 <ul>
 {% for post in site.posts %}
