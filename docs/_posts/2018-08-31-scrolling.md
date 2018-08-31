@@ -3,6 +3,7 @@ layout: post
 title: "Creating a Scrolling Background"
 date: 2018-08-31
 categories: game thoughts
+theme: jekyll-theme-midnight
 ---
 
 ## Make that background move!
