@@ -1,5 +1,5 @@
 theme: jekyll-theme-midnight
-
+baseurl: /MegaMan
 defaults:
     scope:
         path: "assets/img"
