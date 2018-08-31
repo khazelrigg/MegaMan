@@ -2,6 +2,7 @@
 layout: post
 title: "Creating a Scrolling Background"
 date: 2018-08-31
+theme: jekyll-theme-tactile
 categories: game thoughts
 ---
 
