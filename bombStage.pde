@@ -91,9 +91,6 @@ class BombStage extends Level {
     return true;
   }
 
-  boolean atLowestPoint() {
-    return pos.y == 194;
-  }
 
   int getGroundPosition(float x) {
     return 170;

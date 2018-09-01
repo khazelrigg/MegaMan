@@ -7,7 +7,7 @@ class Player {
   int lives = 2;
 
   PVector velocity = new PVector(0, 0);
-  float jumpSpeed = 7;
+  float jumpSpeed = 6;
 
   PVector pos = new PVector(124, 140);
   playerState state = playerState.STAND;
@@ -24,9 +24,8 @@ class Player {
   int framesSinceStand = 0;
 
   PImage img;
+  boolean drawHitBox = true;
   public PImage[] images = new PImage[9];
-  int pHeight;
-  int pWidth;
 
   void loadImages()
   {
@@ -44,8 +43,6 @@ class Player {
     } 
 
     img = images[1];
-    pHeight = img.height;
-    pWidth = img.height;
   }
 
   void draw() {
@@ -60,10 +57,15 @@ class Player {
   void moveCharacter() {
 
     boolean onGround = false;
+    if (current.collisionImg.get(int(current.pos.x + pos.x + 5), int(current.pos.y + current.pos.y )) == #0000bb) println("LADDER");
+
 
     if (!checkCollision(dir.SOUTH, pos)) {
       velocity.y += 0.5;
     } else {
+      if (checkDownCollision(pos, -1)) //Player must be below ground if colliding with pixel above feet so move them up
+        pos.y -= 1;
+
       onGround = true;
       state = playerState.STAND;
       velocity.y = 0;
@@ -89,8 +91,10 @@ class Player {
       }
     }
 
-    if (!checkCollision(dir.NORTH, fPos) && fPos.y > 0 && fPos.y < 224) 
+    //No Collsion going up
+    if (!checkCollision(dir.NORTH, fPos) && fPos.y > 0 && fPos.y < 224) {
       pos.y = fPos.y;
+    }
 
     pushMatrix();
     translate(pos.x, pos.y);
@@ -103,9 +107,11 @@ class Player {
     image(img, 0, 0);
 
     //Draw hitbox
-    stroke(#ffff00);
-    noFill();
-    rect(-img.width/2, -img.height/2, img.width, img.height);
+    if (drawHitBox) {
+      //stroke(#ff00ff);
+      noFill();
+      //rect(-9, -12, 18, 23);
+    }
 
     popMatrix();
   }
@@ -124,14 +130,7 @@ class Player {
       img = images[6]; 
       break;
     case WALK: 
-      img = images[walkImg];
-
-      if (framesSinceWalk == 7) { //How many frames until next walk img
-        walkImg++;
-        framesSinceWalk  = 0;
-      }
-      framesSinceWalk++;
-      if (walkImg > 4) walkImg = 2;
+      walk();
       break;
     case JUMP: 
       img = images[5]; 
@@ -139,8 +138,16 @@ class Player {
     default:    
       img = images[1];
     }
-    pHeight = img.height;
-    pWidth = img.height;
+  }
+
+  void walk() {
+    img = images[walkImg];
+    if (framesSinceWalk == 7) { //How many frames until next walk img
+      walkImg++;
+      framesSinceWalk  = 0;
+    }
+    framesSinceWalk++;
+    if (walkImg > 4) walkImg = 2;
   }
 
   void stand() {
@@ -151,8 +158,6 @@ class Player {
         framesSinceStand = 0;
     } else 
     img = images[1];
-    pHeight = img.height;
-    pWidth = img.height;
     framesSinceStand++;
   }
 
@@ -163,7 +168,7 @@ class Player {
     case NORTH:
       return checkUpCollision(pos);
     case SOUTH:
-      return checkDownCollision(pos);
+      return checkDownCollision(pos, 0);
     case EAST:
       return checkLRCollision(pos);
     case WEST:
@@ -174,26 +179,33 @@ class Player {
   }
 
   boolean checkLRCollision(PVector pos) {
-    stroke(#00ff00);
-
     // Use direction (-1 or 1) to flip sign
-    int pX = int(current.pos.x +  pos.x + direction * (pWidth / 2));
+    int pX = int(current.pos.x + pos.x + direction * 9);
     int pY = int(current.pos.y + pos.y);
 
     color[] colors = new color[3];
     // PIXEL TOP 
-    colors[0] = current.collisionImg.get(pX + 1, pY - pHeight / 2 - 1);
-    rect( pos.x + direction * (pWidth / 2), pos.y - pHeight /2 - 1, 1, 1);
+    colors[0] = current.collisionImg.get(pX + 1, pY - 11);
     // PIXEL CENTERED 
     colors[1] = current.collisionImg.get(pX + 1, pY);
-    rect( pos.x + direction * (pWidth / 2) + 1, pos.y, 1, 1);
     // PIXEL BOTTOM
-    colors[2] = current.collisionImg.get(pX + 1, pY + pHeight / 2 - 1); // Take out 1 from y so that we are not checking in ground
-    rect( pos.x + direction * (pWidth / 2), pos.y + pHeight / 2 - 2, 1, 1);
+    colors[2] = current.collisionImg.get(pX + 1, pY + 1); // Take out 1 from y so that we are not checking in ground
+
+
+    if (drawHitBox) {
+      stroke(#00ff00);
+      rect( pos.x + direction * (9), pos.y - 10, 1, 1);
+      rect( pos.x + direction * (9), pos.y, 1, 1);
+      rect( pos.x + direction * (9), pos.y + 10, 1, 1);
+    }
 
     for (color c : colors) {
       if (c == #000000) {
-        println("RIGHT COLLISION");
+        if (direction > 0) {
+          println("RIGHT COLLISION");
+        } else {
+          println("LEFT COLLISION");
+        }
         return true;
       }
     }
@@ -201,20 +213,25 @@ class Player {
   }
 
   boolean checkUpCollision(PVector pos) {
+    int xOff = 8;
+    int yOff = 13;
+
     int pX = int(current.pos.x +  pos.x);
-    int pY = int(current.pos.y + pos.y) - pHeight / 2;
+    int pY = int(current.pos.y + pos.y) - yOff;
     color[] colors = new color[3];
+
     // PIXEL CENTERED ABOVE
-    colors[0] = current.collisionImg.get(pX, pY - 1);
-    rect( pos.x, pos.y - pHeight /2 - 1, 1, 1);
+    colors[0] = current.collisionImg.get(pX, pY);
+    if (drawHitBox)
+      rect( pos.x, pos.y - yOff, 1, 1);
 
     // PIXEL TOP RIGHT
-    colors[1] = current.collisionImg.get(pX + pWidth / 2, pY - 1);
-    rect( pos.x + pWidth / 2 - 1, pos.y - pHeight /2 - 1, 1, 1);
+    colors[1] = current.collisionImg.get(pX + xOff, pY);
+    if (drawHitBox)rect( pos.x + xOff, pos.y -yOff, 1, 1);
 
     // PIXEL TOP LEFT
-    colors[2] = current.collisionImg.get(pX - pWidth / 2, pY - 1);
-    rect( pos.x - pWidth / 2 + 1, pos.y - pHeight /2 - 1, 1, 1);
+    colors[2] = current.collisionImg.get(pX - xOff, pY);
+    if (drawHitBox)rect( pos.x - xOff, pos.y - yOff, 1, 1);
 
     for (color c : colors) {
       if (c == #000000) {
@@ -225,29 +242,24 @@ class Player {
     return false;
   }
 
-  boolean checkDownCollision(PVector pos) {
+  boolean checkDownCollision(PVector pos, int dist) {
+    int xOff = 7;
     int pX = int(current.pos.x +  pos.x);
-    int pY = int(current.pos.y + pos.y) + pHeight/2 + 1;
-    color[] colors = new color[3];
+    int pY = int(current.pos.y + pos.y) + 11 + dist;
 
-    // PIXEL CENTERED BELOW
-    colors[0] = current.collisionImg.get(pX, pY);
-    rect( pos.x, pos.y + pHeight /2, 1, 1);
 
-    // PIXEL TOP RIGHT
-    colors[1] = current.collisionImg.get(pX + pWidth / 2, pY);
-    rect( pos.x + pWidth / 2 - 1, pos.y + pHeight /2, 1, 1);
+    // LEFT BELOW
+    color bL = current.collisionImg.get(pX - xOff, pY);
+    color bR = current.collisionImg.get(pX + xOff, pY);
+    if (drawHitBox)rect( pos.x - xOff, pos.y + 11 + dist, 1, 1);
+    if (drawHitBox)rect( pos.x + xOff, pos.y + 11 + dist, 1, 1);
 
-    // PIXEL TOP LEFT
-    colors[2] = current.collisionImg.get(pX - pWidth / 2, pY);
-    rect( pos.x - pWidth / 2 + 1, pos.y + pHeight /2, 1, 1);
 
-    for (color c : colors) {
-      if (c == #000000) {
-        println("LOWER COLLISION");
-        return true;
-      }
+
+    if (bL == #000000 || bR == #000000) {
+      return true;
     }
+
     return false;
   }
 
