@@ -6,8 +6,7 @@ teaser: /assets/img/teaser.jpg
 
 author:
     name   : "Kameron Hazelrigg"
-    bio    : "I sometimes code stuff"
-    avatar : "https://avatars2.githubusercontent.com/u/16183861?s=460&v=4.jpg"
+    avatar : "/assets/img/avatar.jpg"
 
 defaults:
    - scope:

@@ -1,6 +1,8 @@
 ---
 title: "Creating a Scrolling Background - pt1"
 date: 2018-08-31
+header:
+    teaser: /assets/img/scrolling/teaser1.png
 category: code
 ---
 ### What good is a sidescrolling platformer if our background can't move?
@@ -124,7 +126,7 @@ Modifying our draw function to use a few functions that tell our tell us if it i
   boolean canMoveDown() {
     if (pos.y == 990 ||
       pos.y == 926 ||
-      pos.y == 30 && !(pos.x == 2829 || pos.x == 4109)||
+      pos.y == 30 && !(pos.x == 2829 || pos.x == 4109) ||
       pos.y == 510 && pos.x != 4109) return false;
     return true;
   }
@@ -147,4 +149,4 @@ Modifying our draw function to use a few functions that tell our tell us if it i
 
 With these modifications we now have a background we can navigate using the keyboard without clipping past any of the map boundaries.
 
-In Part 2 I'll add how to move the background based on player position instead of using keyboard input.
+In [part 2]({{ site.baseurl }}{% post_url 2018-09-01-scrolling2 %})  I'll add how to move the background based on player position instead of using keyboard input.
