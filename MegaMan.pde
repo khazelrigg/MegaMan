@@ -33,7 +33,6 @@ void draw() {
   case LVL1:
     current.drawLevel();
     megaman.draw();
-
     break;
   }
 }

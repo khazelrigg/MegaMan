@@ -10,40 +10,30 @@ class BombStage extends Level {
 
   void drawLevel() {
     float pX = megaman.pos.x;
-    float pY = megaman.pos.y;
-    float dX = 0;
-    int dY = 0;
-   //println("Player (x,y) = (" + pX + ", " + pY + ")" + "DIRECTION: " + megaman.direction+ " VELOCITY:  " + megaman.velocity);
+    //println("Player (x,y) = (" + pX + ", " + pY + ")" + "DIRECTION: " + megaman.direction+ " VELOCITY:  " + megaman.velocity);
     //println("Camera (x,y) = (" + pos.x + ", " + pos.y + ")");
-    
+
     //Only move camera if player is moving
     if (keyPressed) {
       // RIGHT HALF
       if (pX > 127 && megaman.direction > 0) {
         if (canMoveRight()) {
           megaman.pos.x = 127;
-
-          dX = megaman.walkSpeed;
           pos.x += megaman.walkSpeed;
         }
 
         // LEFT HALF
       } else if (pX < 128 && megaman.direction< 0) {
         if (canMoveLeft()) {
-                    megaman.pos.x = 128;
-
-          dX = -megaman.walkSpeed;
+          megaman.pos.x = 128;
           pos.x -= megaman.walkSpeed;
         }
       }
     }
 
-    translate(dX, dY);
+    translate(-pos.x, -pos.y);
     imageMode(CORNER);
-    image(bgImg, -pos.x, -pos.y);
-
-        fill(#000000);
-    //  megaman.draw();
+    image(bgImg, 0, 0);
   }
 
   boolean canMove(dir d) {

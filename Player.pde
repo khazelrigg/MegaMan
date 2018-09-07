@@ -24,7 +24,7 @@ class Player {
   int framesSinceStand = 0;
 
   PImage img;
-  boolean drawHitBox = true;
+  boolean drawHitBox = false;
   public PImage[] images = new PImage[9];
 
   void loadImages()
@@ -57,9 +57,6 @@ class Player {
   void moveCharacter() {
 
     boolean onGround = false;
-    if (current.collisionImg.get(int(current.pos.x + pos.x + 5), int(current.pos.y + current.pos.y )) == #0000bb) println("LADDER");
-
-
     if (!checkCollision(dir.SOUTH, pos)) {
       velocity.y += 0.5;
     } else {
@@ -84,7 +81,7 @@ class Player {
     // Get future position
     PVector fPos = new PVector(pos.x, pos.y);
     fPos.add(velocity);
-
+      // IMG WIDHT?
     if (!current.canMove(dir.WEST) && fPos.x > img.width / 2 ||  !current.canMove(dir.EAST) && fPos.x < 256 - img.width / 2 || fPos.x > 123 && fPos.x < 130) {
       if (fPos.x > pos.x && !checkCollision(dir.EAST, fPos) || fPos.x < pos.x && !checkCollision(dir.WEST, fPos)) {
         pos.x = fPos.x;
@@ -97,13 +94,10 @@ class Player {
     }
 
     pushMatrix();
-    translate(pos.x, pos.y);
+    translate(pos.x + current.pos.x, pos.y + current.pos.y);
     scale(direction, 1);
     imageMode(CENTER);
-
-    // Update img based on state
     setCurrentImg();
-
     image(img, 0, 0);
 
     //Draw hitbox

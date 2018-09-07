@@ -1,15 +1,15 @@
 ---
-title: Making Megaman
+title: ReMaking Megaman
 layout: single
+author_profile: true
 header:
     overlay_image: /assets/img/header.jpg
     cta_label: "View Posts"
     cta_url: "/posts"
-
-author_profile: true
 ---
 # Welcome to my MegaMan project
 
+This page will be following my development of a Mega Man clane written in Processing. Check out each post to see how I made certain parts of the game by studying the original behavior.
 
 <div>
       <h4>{{ site.data.ui-text[site.locale].related_label | default: "Check out my posts" }}</h4>

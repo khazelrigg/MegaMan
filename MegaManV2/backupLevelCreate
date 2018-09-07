@@ -1,0 +1,43 @@
+    /*
+    for (int x = 0; x < map.length; x++) {
+      for (int j = 0; j < map[x].length; j++) {
+        map[x][j] = 999;
+      }
+    }
+
+    for (int x = 0; x < 112; x++) {
+      if (x != 52 && x != 53 && x != 60 && x != 61 && x != 68 && x != 69 && x != 76 && x != 77) {
+        map[12][x] = 1;
+        map[14][x] = 1;
+      }
+    }
+   
+    int[] towers = {50,58,66,74,84};
+    for (int x : towers) {
+      map = addTower(x, 9, map);
+    }
+    map = addTower(109, 4, map);
+    map = addTower(93, 12, map);
+    map = addLargeTower(4, 12, map);
+    map = addLargeTower(23, 6, map);
+    map = addLargeTower(36, 12, map);
+    Table table = loadTable("bombStage/tiles/map.csv", "header");
+    for (TableRow row : table.rows()) {
+      int x = row.getInt("x");
+      int y = row.getInt("y") - 1;
+      int t = row.getInt("tileId");
+      map[y][x] = t;
+    }  
+    tileMap.fillArea(1, 111, 0, 111, 15);
+    tileMap.setMap(map);
+    tileMap.fillArea(1, 111, 0, 111, 5);
+    tileMap.fillArea(1, 111, 6, 111, 9);
+    tileMap.fillArea(1, 111, 10, 111, 12);
+    tileMap.fillArea(1, 20, 8, 23, 11);
+    tileMap.fillArea(1, 86, 12, 93, 14);
+    tileMap.fillArea(0, 19, 8, 19, 10);
+    tileMap.fillArea(1, 16, 10, 23, 10);
+    tileMap.fillArea(1, 27, 10, 30, 12);
+    tileMap.fillArea(2, 30, 10, 30, 12);
+    tileMap.fillArea(1, 90, 9, 93, 9);
+    tileMap.fillArea(1, 103, 4, 109, 4); */
